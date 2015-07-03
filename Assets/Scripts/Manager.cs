@@ -69,6 +69,18 @@ public class Manager : MonoBehaviour {
     }
 	}
 
+  void Update () {
+  
+    if ((Application.platform == RuntimePlatform.Android) || (Application.platform == RuntimePlatform.WindowsEditor)) {
+
+      if (Input.GetKeyDown(KeyCode.Escape)) {
+
+        Application.Quit();
+        return;
+      }
+    }
+  }
+
   void FillButtonsOnGrid () {
 
     int index = 0;
@@ -77,7 +89,7 @@ public class Manager : MonoBehaviour {
     
       Transform newItem = NGUITools.AddChild(m_grid.gameObject, m_buttonPrefab.gameObject).transform;
 
-      newItem.name = "Button_" + index.ToString("D2");
+      newItem.name = "Button_" + index.ToString("D3");
 
       newItem.localPosition = new Vector3(m_buttonPrefab.transform.localPosition.x, m_buttonPrefab.transform.localPosition.y, 1.0f);
 
