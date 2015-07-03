@@ -5,13 +5,13 @@ using System;
 public class Manager : MonoBehaviour {
   
   [System.Serializable]
-  public class Song {
+  public class MySound {
 
     public AudioClip  m_song;
     public string     m_name;
   }
 
-  public Song[]   m_soundsList;
+  public MySound[] m_soundsList;
 
   // ---
 
@@ -22,6 +22,11 @@ public class Manager : MonoBehaviour {
   bool m_isPlayingSound;
 
   AudioSource m_sndSource;
+
+  void Awake () {
+  
+    UnityEngine.Random.seed = (int)System.DateTime.Now.Ticks;
+  }
 
 	// Use this for initialization
 	void Start () {
@@ -68,7 +73,7 @@ public class Manager : MonoBehaviour {
 
     int index = 0;
 
-    foreach(Song song in m_soundsList) {
+    foreach(MySound song in m_soundsList) {
     
       Transform newItem = NGUITools.AddChild(m_grid.gameObject, m_buttonPrefab.gameObject).transform;
 
@@ -89,6 +94,15 @@ public class Manager : MonoBehaviour {
   public void ButtonPlaySound () {
     
     int index = Convert.ToInt32( UIButton.current.name.Split('_')[1] );
+
+    Debug.Log(">>> " + m_soundsList[index].m_name);
+
+    PlaySound(index);
+  }
+
+  public void ButtonPlayRandom () {
+    
+    int index = UnityEngine.Random.Range(0, m_soundsList.Length);
 
     Debug.Log(">>> " + m_soundsList[index].m_name);
 
