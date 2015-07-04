@@ -17,6 +17,7 @@ public class Manager : MonoBehaviour {
   // ---
 
   public UITexture m_background;
+  private int      m_bgIndex;
 
   public UIScrollView m_scrollView;
   public UIGrid       m_grid;
@@ -30,11 +31,16 @@ public class Manager : MonoBehaviour {
   
     //UnityEngine.Random.seed = (int)System.DateTime.Now.Ticks;
 
-    int bgIndex = UnityEngine.Random.Range(0, m_bgList.Length);
+    int lastIndex = PlayerPrefs.GetInt("BGIndex", 0);
 
-    Debug.Log(bgIndex);
+    m_bgIndex = UnityEngine.Random.Range(0, m_bgList.Length);
 
-    m_background.mainTexture = m_bgList[bgIndex];
+    while(m_bgIndex == lastIndex)
+      m_bgIndex = UnityEngine.Random.Range(0, m_bgList.Length);
+
+    Debug.Log(m_bgIndex);
+
+    m_background.mainTexture = m_bgList[m_bgIndex];
   }
 
 	// Use this for initialization
@@ -83,7 +89,7 @@ public class Manager : MonoBehaviour {
     if ((Application.platform == RuntimePlatform.Android) || (Application.platform == RuntimePlatform.WindowsEditor)) {
 
       if (Input.GetKeyDown(KeyCode.Escape)) {
-
+        
         Application.Quit();
         return;
       }
@@ -129,4 +135,9 @@ public class Manager : MonoBehaviour {
 
     PlaySound(index);
   }
+
+  void OnApplicationQuit() {
+
+		PlayerPrefs.SetInt("BGIndex", m_bgIndex);
+	}
 }
