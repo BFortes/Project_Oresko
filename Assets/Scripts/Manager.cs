@@ -11,9 +11,12 @@ public class Manager : MonoBehaviour {
     public string     m_name;
   }
 
-  public MySound[] m_soundsList;
+  public Texture2D[] m_bgList;
+  public MySound[]   m_soundsList;
 
   // ---
+
+  public UITexture m_background;
 
   public UIScrollView m_scrollView;
   public UIGrid       m_grid;
@@ -25,7 +28,13 @@ public class Manager : MonoBehaviour {
 
   void Awake () {
   
-    UnityEngine.Random.seed = (int)System.DateTime.Now.Ticks;
+    //UnityEngine.Random.seed = (int)System.DateTime.Now.Ticks;
+
+    int bgIndex = UnityEngine.Random.Range(0, m_bgList.Length);
+
+    Debug.Log(bgIndex);
+
+    m_background.mainTexture = m_bgList[bgIndex];
   }
 
 	// Use this for initialization
