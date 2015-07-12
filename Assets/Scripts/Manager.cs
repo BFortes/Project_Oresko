@@ -1,18 +1,29 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.IO;
+using System.Collections.Generic;
 
 public class Manager : MonoBehaviour {
   
+  private const string m_rSoundsPath = "Sounds/";
+
   [System.Serializable]
   public class MySound {
 
-    public AudioClip  m_song;
+    public AudioClip  m_sound;
     public string     m_name;
+
+    public MySound (AudioClip snd, string name) {
+
+      m_sound = snd;
+      m_name  = name;
+    }
   }
 
   public Texture2D[] m_bgList;
-  public MySound[]   m_soundsList;
+
+  private List<MySound> m_soundsList = new List<MySound>();
 
   // ---
 
@@ -28,19 +39,22 @@ public class Manager : MonoBehaviour {
   AudioSource m_sndSource;
 
   void Awake () {
-  
-    //UnityEngine.Random.seed = (int)System.DateTime.Now.Ticks;
+    
+    CreateMySoundList();
 
-    int lastIndex = PlayerPrefs.GetInt("BGIndex", 0);
+    if(m_bgList.Length > 1) {
 
-    m_bgIndex = UnityEngine.Random.Range(0, m_bgList.Length);
+      //UnityEngine.Random.seed = (int)System.DateTime.Now.Ticks;
 
-    while(m_bgIndex == lastIndex)
+      int lastIndex = PlayerPrefs.GetInt("BGIndex", 0);
+
       m_bgIndex = UnityEngine.Random.Range(0, m_bgList.Length);
 
-    Debug.Log(m_bgIndex);
+      while(m_bgIndex == lastIndex)
+        m_bgIndex = UnityEngine.Random.Range(0, m_bgList.Length);
 
-    m_background.mainTexture = m_bgList[m_bgIndex];
+      m_background.mainTexture = m_bgList[m_bgIndex];
+    }
   }
 
 	// Use this for initialization
@@ -61,7 +75,7 @@ public class Manager : MonoBehaviour {
     if(m_isPlayingSound)
       m_sndSource.Stop();
 
-      m_sndSource.clip = m_soundsList[index].m_song;
+      m_sndSource.clip = m_soundsList[index].m_sound;
 
       m_isPlayingSound = true;
 
@@ -93,6 +107,20 @@ public class Manager : MonoBehaviour {
         Application.Quit();
         return;
       }
+    }
+  }
+  
+  public void CreateMySoundList () {
+
+    AudioClip[] ac = Resources.LoadAll<AudioClip>( m_rSoundsPath ); 
+
+    for (int s = 0; s < ac.Length; s++) {
+      
+      string name = ac[s].name.Split('_')[1];
+
+      MySound ms = new MySound(ac[s], name);
+
+      m_soundsList.Add(ms);
     }
   }
 
@@ -129,15 +157,22 @@ public class Manager : MonoBehaviour {
 
   public void ButtonPlayRandom () {
     
-    int index = UnityEngine.Random.Range(0, m_soundsList.Length);
+    int index = UnityEngine.Random.Range(0, m_soundsList.Count);
 
     Debug.Log(">>> " + m_soundsList[index].m_name);
 
     PlaySound(index);
   }
 
-  void OnApplicationQuit() {
+  void OnApplicationPause() {
+    
+    if(m_bgList.Length > 1)
+		  PlayerPrefs.SetInt("BGIndex", m_bgIndex);
+	}
 
-		PlayerPrefs.SetInt("BGIndex", m_bgIndex);
+  void OnApplicationQuit() {
+    
+    if(m_bgList.Length > 1)
+		  PlayerPrefs.SetInt("BGIndex", m_bgIndex);
 	}
 }
